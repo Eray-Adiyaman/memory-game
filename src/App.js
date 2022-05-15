@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
+import Card from './components/Card';
 
 const cardImages = [
   {"src": "/img/helmet-1.png"},
@@ -14,8 +15,9 @@ function App() {
 
   const [cards,setCards] =useState([])
   const [turns,setTurns] =useState(0)
+  const [firstChoise,setFirstChoise] =useState(null)
+  const [secondChoise,setSecondChoise] =useState(null)
 
-  console.log(cards)
 
   //shuffle cards
   const shuffleCards = ()=>{
@@ -26,6 +28,30 @@ function App() {
     setTurns(0)
   }
 
+  const handleChoice = (card)=>{
+    firstChoise ? setSecondChoise(card) : setFirstChoise(card)
+  }
+
+  const resetTurn = ()=>{
+    setFirstChoise(null)
+    setSecondChoise(null)
+    setTurns(prev => prev + 1)
+  }
+
+  useEffect(()=>{
+    if(firstChoise && secondChoise){
+      if(firstChoise.src === secondChoise.src){
+        console.log("match!")
+        resetTurn()
+      }else{
+        console.log("no match!")
+        resetTurn()
+      }
+    }
+
+  },[firstChoise,secondChoise])
+
+
   return (
     <div className="App">
       <h1>Memory Game</h1>
@@ -33,12 +59,11 @@ function App() {
       <div className='card-grid'>
         {
           cards.map(card => (
-            <div key={card.id} className="card">
-              <div>
-                <img className='front' src={card.src} alt="card front" />
-                <img  className='back' src='/img/cover.png' alt='card-back' />
-              </div>
-            </div>
+            <Card 
+              key={card.id} 
+              card={card}
+              handleChoice={handleChoice}
+              />
           ))
         }
       </div>
